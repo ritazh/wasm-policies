@@ -29,12 +29,15 @@ func main() {
 	stdout := bytes.NewBuffer(nil)
 
 	// Create a new WebAssembly Runtime.
-	r := wazero.NewRuntime(ctx)
+	c := wazero.NewRuntimeConfig().
+		WithFeatureBulkMemoryOperations(true).WithFeatureSignExtensionOps(true) // not sure why we need this but got this error: memory.copy invalid as feature "bulk-memory-operations" is disabled
+	r := wazero.NewRuntimeWithConfig(ctx, c)
+
 	defer r.Close(ctx) // This closes everything this Runtime created.
 
 	config := wazero.NewModuleConfig().
-	// By default, I/O streams are discarded and there's no file system.
-	WithStdout(stdout).WithStderr(os.Stderr)
+		// By default, I/O streams are discarded and there's no file system.
+		WithStdout(stdout).WithStderr(os.Stderr)
 
 	// Instantiate a Go-defined module named "env" that exports a function to
 	// log to the console.
