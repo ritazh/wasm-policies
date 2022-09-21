@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 	"unsafe"
+
+	"github.com/tidwall/gjson"
 )
 
 // main is required for TinyGo to compile to Wasm.
@@ -15,8 +18,13 @@ func greet() {
 	objectToTest := os.Args[1]
 	parameters := os.Args[2]
 	decision := true
+	
+	value := gjson.Get(objectToTest, "metadata.labels.owner")
+	if !strings.Contains(value.String(), "admin") {
+		decision = false
+	}
 	fmt.Println(decision)
-	log(fmt.Sprint("wasm guest objectToTest >> ", string(objectToTest), ", parameters >> ", string(parameters)))
+	log(fmt.Sprint("wasm guest objectToTest >> ", string(objectToTest), ", parameters >> ", string(parameters), ", value >> ", value.String()))
 }
 
 // log a message to the console using _log.
