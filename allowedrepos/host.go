@@ -29,8 +29,7 @@ func main() {
 	stdout := bytes.NewBuffer(nil)
 
 	// Create a new WebAssembly Runtime.
-	c := wazero.NewRuntimeConfig().
-		WithFeatureBulkMemoryOperations(true).WithFeatureSignExtensionOps(true) // not sure why we need this but got this error: memory.copy invalid as feature "bulk-memory-operations" is disabled
+	c := wazero.NewRuntimeConfig().WithWasmCore2()
 	r := wazero.NewRuntimeWithConfig(ctx, c)
 
 	defer r.Close(ctx) // This closes everything this Runtime created.
