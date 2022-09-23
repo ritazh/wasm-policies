@@ -89,21 +89,21 @@ unsafe fn deallocate(ptr: *mut u8, size: usize) {
 fn eval() {
     // let args: Vec<_> = env::args().collect();
     // let object_to_test = &args[1];
-    let object_to_test = r#"{"apiVersion":"v1","kind":"Pod","metadata":{"name":"nginx","labels":{"app":"nginx"}},"spec":{"containers":[{"name":"nginx","image":"nginx","securityContext":{"privileged":true}}]}}"#;
+    let object_to_test = r#"{"apiVersion":"v1","kind":"Pod","metadata":{"name":"nginx","labels":{"app":"nginx"}},"spec":{"containers":[{"name":"nginx","image":"nginx","securityContext":{"privileged":false}}]}}"#;
 
     match serde_json::from_str::<apicore::Pod>(object_to_test) {
         Ok(pod) => {
             if let Some(pod_spec) = &pod.spec {
                 return match validate_pod(pod_spec) {
-                    Ok(_) => log("true".to_string()),
-                    Err(_) => log("false".to_string()),
+                    Ok(_) => println!("true"),
+                    Err(_) => println!("false"),
                 };
             };
             // If there is not pod spec, just accept it. There is no data to be
             // validated.
-            log("true".to_string())
+            println!("true")
         }
-        Err(_) => log("false".to_string()),
+        Err(_) => println!("false"),
     }
 }
 
