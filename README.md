@@ -1,4 +1,4 @@
-# hello-wasm
+# wasm-policies
 
 ## To test allowed repos or required labels (policies written in Go):
 
