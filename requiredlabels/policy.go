@@ -17,12 +17,17 @@ func eval() {
 	objectToTest := os.Args[1]
 	parameters := os.Args[2]
 	decision := true
-	
+
+	paramResults := gjson.Get(parameters, "labelPrefix")
 	value := gjson.Get(objectToTest, "metadata.labels.owner")
-	///TODO: integrate with parameters
-	if !strings.Contains(value.String(), "admin") {
-		decision = false
+
+	for _, p := range paramResults.Array() {
+		decision = !strings.HasPrefix(value.String(), p.String())
+		if !decision {
+			break
+		}
 	}
+
 	fmt.Print(decision)
 	log(fmt.Sprint("wasm guest objectToTest >> ", string(objectToTest), ", parameters >> ", string(parameters), ", value >> ", value.String()))
 }
@@ -44,6 +49,7 @@ func _log(ptr uint32, size uint32)
 
 // _eval is a WebAssembly export that reads from stdin
 // and write to stdout
+//
 //export eval
 func _eval() {
 	eval()
