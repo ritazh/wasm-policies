@@ -87,9 +87,9 @@ unsafe fn deallocate(ptr: *mut u8, size: usize) {
 }
 
 fn eval() {
-    // let args: Vec<_> = env::args().collect();
-    // let object_to_test = &args[1];
-    let object_to_test = r#"{"apiVersion":"v1","kind":"Pod","metadata":{"name":"nginx","labels":{"app":"nginx"}},"spec":{"containers":[{"name":"nginx","image":"nginx","securityContext":{"privileged":false}}]}}"#;
+    let args: Vec<_> = env::args().collect();
+    let object_to_test = &args[1];
+    // let object_to_test = r#"{"apiVersion":"v1","kind":"Pod","metadata":{"name":"nginx","labels":{"app":"nginx"}},"spec":{"containers":[{"name":"nginx","image":"nginx","securityContext":{"privileged":false}}]}}"#;
 
     match serde_json::from_str::<apicore::Pod>(object_to_test) {
         Ok(pod) => {

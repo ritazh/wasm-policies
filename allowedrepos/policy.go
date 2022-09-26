@@ -6,8 +6,6 @@ import (
 	"strings"
 	"unsafe"
 
-	corev1 "github.com/kubewarden/k8s-objects/api/core/v1"
-	"github.com/mailru/easyjson"
 	"github.com/tidwall/gjson"
 )
 
@@ -18,21 +16,17 @@ func main() {}
 func eval() {
 	objectToTest := os.Args[1]
 	parameters := os.Args[2]
-
-	// objectToTest = `{"apiVersion":"v1","kind":"Pod","metadata":{"name":"test-pod1"},"spec":{"containers":[{"image":"tomcat","name":"tomcat"}]}}`
-	// parameters = `{"imagePrefix":["tom"]}`
+	decision := true
 
 	paramResults := gjson.Get(parameters, "imagePrefix")
+	images := gjson.Get(objectToTest, "spec.containers.#.image")
 
-	pod := &corev1.Pod{}
-	if err := easyjson.Unmarshal([]byte(objectToTest), pod); err != nil {
-		panic(err)
-	}
-
-	decision := false
-	for _, container := range pod.Spec.Containers {
+	for _, image := range images.Array() {
 		for _, p := range paramResults.Array() {
-			decision = strings.HasPrefix(container.Image, p.String())
+			decision = !strings.HasPrefix(image.String(), p.String())
+			if !decision {
+				break
+			}
 		}
 	}
 
