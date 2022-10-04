@@ -29,8 +29,7 @@ func main() {
 	stdout := bytes.NewBuffer(nil)
 
 	// Create a new WebAssembly Runtime.
-	c := wazero.NewRuntimeConfig().WithWasmCore2()
-	r := wazero.NewRuntimeWithConfig(ctx, c)
+	r := wazero.NewRuntime(ctx)
 
 	defer r.Close(ctx) // This closes everything this Runtime created.
 
@@ -40,7 +39,7 @@ func main() {
 
 	// Instantiate a Go-defined module named "env" that exports a function to
 	// log to the console.
-	_, err := r.NewModuleBuilder("env").
+	_, err := r.NewHostModuleBuilder("env").
 		ExportFunction("log", logString).
 		Instantiate(ctx, r)
 	if err != nil {
@@ -54,7 +53,7 @@ func main() {
 	}
 
 	// Compile the WebAssembly module using the default configuration.
-	code, err := r.CompileModule(ctx, policyWasm, wazero.NewCompileConfig())
+	code, err := r.CompileModule(ctx, policyWasm)
 	if err != nil {
 		log.Panicln(err)
 	}
